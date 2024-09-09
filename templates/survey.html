@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설문 조사</title>
+</head>
+<body>
+    <h1>설문 조사</h1>
+    <form method="POST" action="{{ url_for('survey') }}">
+        {{ form.hidden_tag() }}
+        {{ form.question1.label }} {{ form.question1() }}<br>
+        {{ form.question2.label }} {{ form.question2() }}<br>
+        {{ form.question3.label }} {{ form.question3() }}<br>
+        {{ form.question4.label }} {{ form.question4() }}<br>
+        {{ form.question5.label }} {{ form.question5() }}<br>
+        {{ form.submit() }}
+    </form>
+</body>
+</html>

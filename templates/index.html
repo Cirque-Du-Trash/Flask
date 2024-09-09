@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설문자 정보 입력</title>
+</head>
+<body>
+    <h1>설문자 정보 입력</h1>
+    <form method="POST" action="{{ url_for('index') }}">
+        {{ form.hidden_tag() }}
+        {{ form.name.label }} {{ form.name(size=6) }}<br>
+        {{ form.email.label }} {{ form.email(size=16) }}<br>
+        {{ form.age.label }} {{ form.age() }}<br>
+        {{ form.submit() }}
+    </form>
+    
+    <br>
+    <a href="{{ url_for('login') }}">
+        <button type="button">로그인</button>
+    </a>
+</body>
+</html>

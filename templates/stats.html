@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>통계 결과</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>설문 결과 통계</h1>
+        <p>총 응답 수: {{ total_responses }}</p>
+        
+        <h2>질문별 응답 통계</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>질문</th>
+                    <th>예 응답 수</th>
+                    <th>아니오 응답 수</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question, stats in question_stats.items() %}
+                <tr>
+                    <td>{{ question }}</td>
+                    <td>{{ stats.yes }}</td>
+                    <td>{{ stats.no }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>참가자 정보</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>참가자 ID</th>
+                    <th>응답 날짜</th>
+                    <th>선택한 항목</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for participant in participants %}
+                <tr>
+                    <td>{{ participant.id }}</td>
+                    <td>{{ participant.response_date }}</td>
+                    <td>
+                        {% set responses = participant.response | fromjson %}
+                        {% for key, value in responses.items() %}
+                            {{ key }}: {{ value }}<br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
