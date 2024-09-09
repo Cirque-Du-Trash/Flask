@@ -1,3 +1,4 @@
+```
 test/
 │
 ├── app.py                # 메인 애플리케이션 파일
@@ -11,3 +12,4 @@ test/
 │   ├── survey.html       # 설문 페이지
 │   └── stats.html        # 통계 페이지
 └── static/               # 정적 파일 (CSS, JS 등)
+```
