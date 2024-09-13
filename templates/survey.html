@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>설문 조사</title>
+    <title>설문조사</title>
 </head>
 <body>
-    <h1>설문 조사</h1>
-    <form method="POST" action="{{ url_for('survey') }}">
-        {{ form.hidden_tag() }}
-        {{ form.question1.label }} {{ form.question1() }}<br>
-        {{ form.question2.label }} {{ form.question2() }}<br>
-        {{ form.question3.label }} {{ form.question3() }}<br>
-        {{ form.question4.label }} {{ form.question4() }}<br>
-        {{ form.question5.label }} {{ form.question5() }}<br>
-        {{ form.submit() }}
+    <h1>설문조사</h1>
+    <form action="{{ url_for('survey') }}" method="post">
+        {% for question in questions %}
+            <label>{{ question.text }}</label><br>
+            <input type="radio" name="question{{ loop.index }}" value="yes" required> 예<br>
+            <input type="radio" name="question{{ loop.index }}" value="no" required> 아니오<br>
+        {% endfor %}
+        <button type="submit">제출</button>
     </form>
 </body>
 </html>

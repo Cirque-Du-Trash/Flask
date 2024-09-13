@@ -15,29 +15,31 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 migrate = Migrate(app, db)
 db.init_app(app)
 login_manager = LoginManager(app)
+login_manager.login_view = 'login'  # 로그인 페이지의 엔드포인트 설정
 
-def create_initial_questions():
-    if not Question.query.first():
-        for question_text in TestForm.questions:
-            db.session.add(Question(text=question_text))
-        db.session.commit()
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+class MyModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin  # 로그인 여부 및 관리자 여부 확인
+
+admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
+admin.add_view(MyModelView(User, db.session))
+admin.add_view(MyModelView(TestResponse, db.session))
 
 def create_admin_user():
     if not User.query.filter_by(username='admin').first():
         admin_user = User(username='admin')
-        admin_user.set_password('admin')
+        admin_user.set_password('admin')  # 비밀번호 설정
         admin_user.is_admin = True
         db.session.add(admin_user)
         db.session.commit()
 
 with app.app_context():
-    db.create_all()
-    create_admin_user()
-    create_initial_questions() # 초기 질문 추가
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    db.create_all()  # 테이블 생성
+    create_admin_user()  # 기본 어드민 계정 생성
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -48,15 +50,20 @@ def index():
 
 @app.route('/survey', methods=['GET', 'POST'])
 def survey():
-    form = TestForm()
-    if form.validate_on_submit():
-        responses = {f'question{i}': form.data[f'question{i}'] for i in range(1, 6)}
+    questions = Question.query.all()
+    if request.method == 'POST':
+        responses = {}
+        for i, question in enumerate(questions):
+            response_key = f'question{i + 1}'
+            responses[response_key] = request.form.get(response_key)
+
         user_id = current_user.id if current_user.is_authenticated else None
         test_response = TestResponse(user_id=user_id, response=json.dumps(responses))
         db.session.add(test_response)
         db.session.commit()
         return redirect(url_for('result'))
-    return render_template('survey.html', form=form)
+    
+    return render_template('survey.html', questions=questions)
 
 @app.route('/result')
 def result():
@@ -66,7 +73,6 @@ def result():
 @login_required
 def admin_view():
     questions = Question.query.all()
-    print(questions)  # 디버깅을 위한 로그
     return render_template('admin.html', questions=questions)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -112,17 +118,12 @@ def manage_questions():
 def edit_questions():
     edit_question_text = request.form.get('edit_question_text')
     question_id = request.form.get('question_id')
-    print(f'Editing question ID: {question_id}, New text: {edit_question_text}')  # 로그 출력
     if edit_question_text and question_id:
         question = Question.query.get(question_id)
         if question:
             question.text = edit_question_text
             db.session.commit()
     return redirect(url_for('admin_view'))
-
-admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(TestResponse, db.session))
 
 if __name__ == '__main__':
     app.run(debug=True)
