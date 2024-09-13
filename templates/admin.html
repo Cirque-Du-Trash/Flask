@@ -25,12 +25,12 @@
     <h3>기존 질문 수정</h3>
     <form action="{{ url_for('edit_questions') }}" method="post">
         <label for="edit_question">수정할 질문:</label><br>
-        <select name="question_id" required>
+        <select name="question_id" id="edit_question" required>
             {% for question in questions %}
                 <option value="{{ question.id }}">{{ question.text }}</option>
             {% endfor %}
         </select><br>
-        <input type="text" id="edit_question" name="edit_question" required><br>
+        <input type="text" name="edit_question_text" placeholder="새 질문 내용" required><br>
         <button type="submit">수정</button>
     </form>
 </body>

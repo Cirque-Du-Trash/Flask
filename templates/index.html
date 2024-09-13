@@ -9,9 +9,9 @@
     <h1>설문자 정보 입력</h1>
     <form method="POST" action="{{ url_for('index') }}">
         {{ form.hidden_tag() }}
-        {{ form.name.label }} {{ form.name(size=6) }}<br>
-        {{ form.email.label }} {{ form.email(size=16) }}<br>
-        {{ form.age.label }} {{ form.age() }}<br>
+        {{ form.name.label }} {{ form.name(size=16) }}<br>
+        {{ form.birth_year.label }} {{ form.birth_year() }}<br>
+        {{ form.gender.label }} {{ form.gender() }}<br>
         {{ form.submit() }}
     </form>
     

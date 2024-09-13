@@ -22,10 +22,7 @@ class TestResponse(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     response = db.Column(db.Text, nullable=False)
-    response_date = db.Column(db.DateTime, default=datetime.utcnow)  # 응답 날짜 추가
-    name = db.Column(db.String)  # 참가자 이름
-    email = db.Column(db.String)  # 참가자 이메일
-    age_group = db.Column(db.String)  # 참가자 연령대
+    response_date = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from forms import TestForm, LoginForm, SurveyInfoForm
+from forms import SurveyInfoForm, LoginForm, TestForm
 from models import db, User, TestResponse, Question
 import json
 
@@ -16,10 +16,16 @@ migrate = Migrate(app, db)
 db.init_app(app)
 login_manager = LoginManager(app)
 
+def create_initial_questions():
+    if not Question.query.first():
+        for question_text in TestForm.questions:
+            db.session.add(Question(text=question_text))
+        db.session.commit()
+
 def create_admin_user():
-    if not User.query.filter_by(username='admin').first():  # 중복 방지
+    if not User.query.filter_by(username='admin').first():
         admin_user = User(username='admin')
-        admin_user.set_password('admin')  # 비밀번호 해시 설정
+        admin_user.set_password('admin')
         admin_user.is_admin = True
         db.session.add(admin_user)
         db.session.commit()
@@ -27,6 +33,7 @@ def create_admin_user():
 with app.app_context():
     db.create_all()
     create_admin_user()
+    create_initial_questions() # 초기 질문 추가
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -45,7 +52,7 @@ def survey():
     if form.validate_on_submit():
         responses = {f'question{i}': form.data[f'question{i}'] for i in range(1, 6)}
         user_id = current_user.id if current_user.is_authenticated else None
-        test_response = TestResponse(user_id=user_id, response=json.dumps(responses))  # JSON 형식으로 저장
+        test_response = TestResponse(user_id=user_id, response=json.dumps(responses))
         db.session.add(test_response)
         db.session.commit()
         return redirect(url_for('result'))
@@ -58,7 +65,8 @@ def result():
 @app.route('/admin')
 @login_required
 def admin_view():
-    questions = Question.query.all()  # 모든 질문 조회
+    questions = Question.query.all()
+    print(questions)  # 디버깅을 위한 로그
     return render_template('admin.html', questions=questions)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -81,18 +89,12 @@ def logout():
 @login_required
 def stats():
     total_responses = TestResponse.query.count()
+    question_stats = {question.text: {
+        'yes': TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "yes"%')).count(),
+        'no': TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "no"%')).count()
+    } for question in Question.query.all()}
 
-    # 질문별 응답 수 계산
-    question_stats = {}
-    questions = Question.query.all()
-    for question in questions:
-        yes_count = TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "yes"%')).count()
-        no_count = TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "no"%')).count()
-        question_stats[question.text] = {'yes': yes_count, 'no': no_count}
-
-    # 참가자 정보 수집
     participants = TestResponse.query.all()
-
     return render_template('stats.html', total_responses=total_responses, question_stats=question_stats, participants=participants)
 
 @app.route('/manage_questions', methods=['POST'])
@@ -100,26 +102,22 @@ def stats():
 def manage_questions():
     new_question = request.form.get('new_question')
     if new_question:
-        # 새로운 질문 추가
         question = Question(text=new_question)
         db.session.add(question)
         db.session.commit()
-
     return redirect(url_for('admin_view'))
 
 @app.route('/edit_questions', methods=['POST'])
 @login_required
 def edit_questions():
-    edit_question = request.form.get('edit_question')
-    question_id = request.form.get('question_id')  # 수정할 질문의 ID
-
-    if edit_question and question_id:
-        # 질문 수정
+    edit_question_text = request.form.get('edit_question_text')
+    question_id = request.form.get('question_id')
+    print(f'Editing question ID: {question_id}, New text: {edit_question_text}')  # 로그 출력
+    if edit_question_text and question_id:
         question = Question.query.get(question_id)
         if question:
-            question.text = edit_question
+            question.text = edit_question_text
             db.session.commit()
-
     return redirect(url_for('admin_view'))
 
 admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')

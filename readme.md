@@ -6,9 +6,9 @@ test/
 ├── forms.py              # 폼 정의
 ├── templates/            # HTML 템플릿 폴더
 │   ├── index.html        # 설문자 정보 입력 페이지
-│   ├── result.html       # 결과 페이지
+│   ├── result.html       # 설문 종료 페이지 및 감사 인사 출력
 │   ├── admin.html        # 관리자 페이지
-│   ├── login.html        # 로그인 페이지
+│   ├── login.html        # 관리자 로그인 페이지
 │   ├── survey.html       # 설문 페이지
 │   └── stats.html        # 통계 페이지
 └── static/               # 정적 파일 (CSS, JS 등)
