@@ -67,7 +67,7 @@ def index():
 # 설문 페이지
 @app.route('/survey', methods=['GET', 'POST'])
 def survey():
-    questions = Question.query.all()
+    questions = Question.query.order_by(Question.order).all()  # 순서에 따라 질문 정렬
     if request.method == 'POST':
         responses = {}
         for i, question in enumerate(questions):
@@ -161,26 +161,45 @@ def delete_question(question_id):
 @app.route('/manage_questions', methods=['POST'])
 @login_required
 def manage_questions():
-    new_question = request.form.get('new_question')
-    if new_question:
-        question = Question(text=new_question)
-        db.session.add(question)
+    action = request.form.get('action')
+
+    if action == 'add':
+        new_question = request.form.get('new_question')
+        if new_question:
+            question = Question(text=new_question)
+            db.session.add(question)
+            db.session.commit()
+
+    elif action == 'edit':
+        question_ids = request.form.getlist('question_id[]')
+        question_texts = request.form.getlist('question_text[]')
+        orders = request.form.getlist('order[]')
+
+        for q_id, q_text, order in zip(question_ids, question_texts, orders):
+            question = Question.query.get(q_id)
+            if question:
+                question.text = q_text
+                question.order = int(order)
+        
         db.session.commit()
-    return redirect(url_for('admin_view'))
 
-# 질문 순서
-@app.route('/reorder_questions', methods=['POST'])
-@login_required
-def reorder_questions():
-    question_ids = request.form.getlist('question_ids[]')
-    new_order = request.form.getlist('order[]')
-
-    for index, question_id in enumerate(question_ids):
+    elif action == 'delete':
+        question_id = request.form.get('question_id')
         question = Question.query.get(question_id)
         if question:
-            question.order = int(new_order[index])  # 새로운 순서 저장
+            db.session.delete(question)
+            db.session.commit()
+            
+    elif action == 'reorder':
+        question_ids = request.form.getlist('question_id[]')
+        orders = request.form.getlist('order[]')
 
-    db.session.commit()
+        for index, question_id in enumerate(question_ids):
+            question = Question.query.get(question_id)
+            if question:
+                question.order = int(orders[index])  # 새로운 순서 저장
+
+        db.session.commit()
 
     return redirect(url_for('admin_view'))
 
