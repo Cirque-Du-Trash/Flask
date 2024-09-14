@@ -132,12 +132,18 @@ def edit_questions():
     question_ids = request.form.getlist('question_id[]')  # 여러 개의 질문 ID를 받음
     edit_question_texts = request.form.getlist('edit_question_text[]')  # 여러 개의 질문 텍스트를 받음
 
+    # 디버깅을 위한 프린트
+    print("Received question IDs:", question_ids)
+    print("Received edited question texts:", edit_question_texts)
+
     for question_id, edit_question_text in zip(question_ids, edit_question_texts):
         question = Question.query.get(question_id)
         if question:
+            print(f"Updating question ID {question_id} to text: {edit_question_text}")  # 어떤 질문이 수정되는지 출력
             question.text = edit_question_text  # 질문 텍스트 수정
 
     db.session.commit()
+    print("Database commit successful.")  # 데이터베이스 커밋 성공 메시지
 
     return redirect(url_for('admin_view'))
 

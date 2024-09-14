@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>통계 결과</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stats.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>설문 결과 통계</h1>
-        <p>총 응답 수: {{ total_responses }}</p>
-        
+        <p>총 응답 수: <strong>{{ total_responses }}</strong></p>
+
         <h2>질문별 응답 통계</h2>
-        <table class="table table-bordered">
+        <table class="table">
             <thead>
                 <tr>
                     <th>질문</th>
@@ -32,7 +32,7 @@
         </table>
 
         <h2>참가자 정보</h2>
-        <table class="table table-bordered">
+        <table class="table">
             <thead>
                 <tr>
                     <th>참가자 ID</th>

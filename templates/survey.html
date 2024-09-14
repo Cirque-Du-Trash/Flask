@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설문조사</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='survey.css') }}">
 </head>
 <body>
-    <h1>설문조사</h1>
-    <form action="{{ url_for('survey') }}" method="post">
-        {% for question in questions %}
-            <label>{{ question.text }}</label><br>
-            <input type="radio" name="question{{ loop.index }}" value="yes" required> 예<br>
-            <input type="radio" name="question{{ loop.index }}" value="no" required> 아니오<br>
-        {% endfor %}
-        <button type="submit">제출</button>
-    </form>
+    <div class="container">
+        <h1>설문조사</h1>
+        <form action="{{ url_for('survey') }}" method="post">
+            {% for question in questions %}
+                <div class="form-group">
+                    <label>{{ question.text }}</label><br>
+                    <input type="radio" name="question{{ loop.index }}" value="yes" required> 예<br>
+                    <input type="radio" name="question{{ loop.index }}" value="no" required> 아니오<br>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn">제출</button>
+        </form>
+    </div>
 </body>
 </html>
