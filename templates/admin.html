@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .question-input {
+            width: 400px;  /* 입력 필드의 너비를 조정 */
+        }
+    </style>
 </head>
 <body>
     <h1>관리자 페이지</h1>
@@ -22,16 +27,34 @@
         <button type="submit">추가</button>
     </form>
     
-    <h3>기존 질문 수정</h3>
+    <h3>현재 질문 목록</h3>
     <form action="{{ url_for('edit_questions') }}" method="post">
-        <label for="edit_question">수정할 질문:</label><br>
-        <select name="question_id" id="edit_question" required>
+        <ul>
             {% for question in questions %}
-                <option value="{{ question.id }}">{{ question.text }}</option>
+                <li>
+                    <input type="text" name="edit_question_text[]" class="question-input" value="{{ question.text }}" required>
+                    <input type="hidden" name="question_id[]" value="{{ question.id }}">
+                    <input type="number" name="order[]" value="{{ question.order }}" min="1" max="{{ questions|length }}" style="width: 50px; display: inline-block;">
+                    <button type="button" onclick="document.getElementById('delete-form-{{ question.id }}').submit();">삭제</button>
+                    <form id="delete-form-{{ question.id }}" action="{{ url_for('delete_question', question_id=question.id) }}" method="post" style="display:none;"></form>
+                </li>
             {% endfor %}
-        </select><br>
-        <input type="text" name="edit_question_text" placeholder="새 질문 내용" required><br>
-        <button type="submit">수정</button>
+        </ul>
+        <button type="submit">수정</button>  <!-- 수정 버튼 -->
+    </form>
+
+    <h3>순서 변경</h3>
+    <form action="{{ url_for('reorder_questions') }}" method="post">
+        <ul>
+            {% for question in questions %}
+                <li>
+                    <input type="hidden" name="question_ids[]" value="{{ question.id }}">
+                    <input type="number" name="order[]" value="{{ question.order }}" min="1" max="{{ questions|length }}" style="width: 50px; display: inline-block;">
+                    {{ question.text }}
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">순서 변경</button>
     </form>
 </body>
 </html>

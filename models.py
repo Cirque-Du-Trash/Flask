@@ -27,6 +27,7 @@ class TestResponse(db.Model):
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(200), nullable=False)
+    order = db.Column(db.Integer, nullable=False, default=0)  # 순서 필드 추가
 
     def __repr__(self):
         return f'<Question {self.text}>'

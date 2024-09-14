@@ -12,8 +12,11 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
 
+# 데이터베이스 및 마이그레이션 초기화
 migrate = Migrate(app, db)
 db.init_app(app)
+
+# 로그인 관리 초기화
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'  # 로그인 페이지의 엔드포인트 설정
 
@@ -21,6 +24,7 @@ login_manager.login_view = 'login'  # 로그인 페이지의 엔드포인트 설
 def load_user(user_id):
     return User.query.get(user_id)
 
+# 어드민 패널 설정
 class MyModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin  # 로그인 여부 및 관리자 여부 확인
@@ -29,6 +33,7 @@ admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
 admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(TestResponse, db.session))
 
+# 기본 어드민 계정 생성
 def create_admin_user():
     if not User.query.filter_by(username='admin').first():
         admin_user = User(username='admin')
@@ -37,10 +42,21 @@ def create_admin_user():
         db.session.add(admin_user)
         db.session.commit()
 
+# 초기 질문 생성
+def create_initial_questions():
+    if not Question.query.first():
+        for index, question_text in enumerate(TestForm.questions):
+            question = Question(text=question_text, order=index + 1)  # 순서 지정
+            db.session.add(question)
+        db.session.commit()
+
+# 애플리케이션 시작 시 데이터베이스 및 초기 설정
 with app.app_context():
     db.create_all()  # 테이블 생성
+    create_initial_questions()  # 초기 질문 생성
     create_admin_user()  # 기본 어드민 계정 생성
 
+# 기본 페이지
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = SurveyInfoForm()
@@ -48,6 +64,7 @@ def index():
         return redirect(url_for('survey'))
     return render_template('index.html', form=form)
 
+# 설문 페이지
 @app.route('/survey', methods=['GET', 'POST'])
 def survey():
     questions = Question.query.all()
@@ -65,16 +82,19 @@ def survey():
     
     return render_template('survey.html', questions=questions)
 
+# 결과 페이지
 @app.route('/result')
 def result():
     return render_template('result.html')
 
+# 어드민 페이지
 @app.route('/admin')
 @login_required
 def admin_view():
-    questions = Question.query.all()
+    questions = Question.query.order_by(Question.order).all()  # 순서 기준으로 정렬
     return render_template('admin.html', questions=questions)
 
+# 로그인 페이지
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -85,12 +105,14 @@ def login():
             return redirect(url_for('admin_view'))
     return render_template('login.html', form=form)
 
+# 로그아웃
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
+# 통계 페이지
 @app.route('/stats')
 @login_required
 def stats():
@@ -103,6 +125,33 @@ def stats():
     participants = TestResponse.query.all()
     return render_template('stats.html', total_responses=total_responses, question_stats=question_stats, participants=participants)
 
+# 질문 관리
+@app.route('/edit_questions', methods=['POST'])
+@login_required
+def edit_questions():
+    question_ids = request.form.getlist('question_id[]')  # 여러 개의 질문 ID를 받음
+    edit_question_texts = request.form.getlist('edit_question_text[]')  # 여러 개의 질문 텍스트를 받음
+
+    for question_id, edit_question_text in zip(question_ids, edit_question_texts):
+        question = Question.query.get(question_id)
+        if question:
+            question.text = edit_question_text  # 질문 텍스트 수정
+
+    db.session.commit()
+
+    return redirect(url_for('admin_view'))
+
+# 질문 삭제
+@app.route('/delete_question/<int:question_id>', methods=['POST'])
+@login_required
+def delete_question(question_id):
+    question = Question.query.get(question_id)
+    if question:
+        db.session.delete(question)
+        db.session.commit()
+    return redirect(url_for('admin_view'))
+
+# 질문 추가
 @app.route('/manage_questions', methods=['POST'])
 @login_required
 def manage_questions():
@@ -113,17 +162,22 @@ def manage_questions():
         db.session.commit()
     return redirect(url_for('admin_view'))
 
-@app.route('/edit_questions', methods=['POST'])
+# 질문 순서
+@app.route('/reorder_questions', methods=['POST'])
 @login_required
-def edit_questions():
-    edit_question_text = request.form.get('edit_question_text')
-    question_id = request.form.get('question_id')
-    if edit_question_text and question_id:
+def reorder_questions():
+    question_ids = request.form.getlist('question_ids[]')
+    new_order = request.form.getlist('order[]')
+
+    for index, question_id in enumerate(question_ids):
         question = Question.query.get(question_id)
         if question:
-            question.text = edit_question_text
-            db.session.commit()
+            question.order = int(new_order[index])  # 새로운 순서 저장
+
+    db.session.commit()
+
     return redirect(url_for('admin_view'))
 
+# 애플리케이션 실행
 if __name__ == '__main__':
     app.run(debug=True)
