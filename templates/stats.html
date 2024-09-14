@@ -12,24 +12,10 @@
         <p>총 응답 수: <strong>{{ total_responses }}</strong></p>
 
         <h2>질문별 응답 통계</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>질문</th>
-                    <th>예 응답 수</th>
-                    <th>아니오 응답 수</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for question, stats in question_stats.items() %}
-                <tr>
-                    <td>{{ question }}</td>
-                    <td>{{ stats.yes }}</td>
-                    <td>{{ stats.no }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- Plotly 그래프 출력 -->
+        <div>
+            {{ graph_html | safe }}
+        </div>
 
         <h2>참가자 정보</h2>
         <table class="table">
@@ -46,8 +32,7 @@
                     <td>{{ participant.id }}</td>
                     <td>{{ participant.response_date }}</td>
                     <td>
-                        {% set responses = participant.response | fromjson %}
-                        {% for key, value in responses.items() %}
+                        {% for key, value in participant.responses.items() %}
                             {{ key }}: {{ value }}<br>
                         {% endfor %}
                     </td>

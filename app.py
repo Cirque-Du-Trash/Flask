@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -6,6 +6,8 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from forms import SurveyInfoForm, LoginForm, TestForm
 from models import db, User, TestResponse, Question
+import pandas as pd
+import plotly.express as px
 import json
 
 app = Flask(__name__)
@@ -117,13 +119,34 @@ def logout():
 @login_required
 def stats():
     total_responses = TestResponse.query.count()
-    question_stats = {question.text: {
-        'yes': TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "yes"%')).count(),
-        'no': TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "no"%')).count()
-    } for question in Question.query.all()}
+    
+    # 질문 통계 계산
+    questions = Question.query.all()
+    question_stats = []
+    for question in questions:
+        yes_count = TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "yes"%')).count()
+        no_count = TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "no"%')).count()
+        question_stats.append({
+            'question': question.text,
+            'yes': yes_count,
+            'no': no_count
+        })
 
+    # 참가자 정보
     participants = TestResponse.query.all()
-    return render_template('stats.html', total_responses=total_responses, question_stats=question_stats, participants=participants)
+
+    # 데이터프레임 생성
+    df = pd.DataFrame(question_stats)
+
+    # Plotly를 이용한 그래프 생성
+    fig = px.bar(df, x='question', y=['yes', 'no'], title='질문별 응답 통계', barmode='group')
+    graph_html = fig.to_html(full_html=False)
+
+    # JSON 응답 파싱
+    for participant in participants:
+        participant.responses = json.loads(participant.response)  # JSON 문자열 파싱
+
+    return render_template('stats.html', total_responses=total_responses, graph_html=graph_html, participants=participants)
 
 # 질문 관리
 @app.route('/edit_questions', methods=['POST'])

@@ -1,12 +1,25 @@
+/* 전체 바디 스타일 */
+body {
+    font-family: Arial, sans-serif; /* 기본 글꼴 설정 */
+    background-color: #ffffff; /* 흰색 배경 */
+    color: #000000; /* 검은색 글자 */
+    margin: 0; /* 기본 여백 제거 */
+    padding: 20px; /* 페이지 여백 */
+}
+
 /* 컨테이너 스타일 */
 .container {
     max-width: 800px; /* 최대 너비 */
     margin: auto; /* 가운데 정렬 */
-    background-color: #ffffff; /* 흰색 배경 */
     padding: 20px; /* 여백 */
-    border: 1px solid #cccccc; /* 연한 회색 테두리 */
+    border: 1px solid #000000; /* 검은색 테두리 */
     border-radius: 4px; /* 모서리 둥글기 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 아주 연한 그림자 */
+}
+
+/* 제목 스타일 */
+h1, h2 {
+    color: #000000; /* 검은색 글자 */
+    margin: 10px 0; /* 상하 여백 */
 }
 
 /* 테이블 스타일 */
@@ -17,16 +30,21 @@
 }
 
 .table th, .table td {
-    border: 1px solid #cccccc; /* 연한 회색 테두리 */
+    border: 1px solid #000000; /* 검은색 테두리 */
     padding: 10px; /* 여백 */
     text-align: left; /* 왼쪽 정렬 */
 }
 
 .table th {
-    background-color: #f2f2f2; /* 연한 회색 배경 */
+    background-color: #f0f0f0; /* 연한 회색 배경 */
     font-weight: bold; /* 볼드체 */
 }
 
 .table tr:nth-child(even) {
-    background-color: #f9f9f9; /* 짝수 행에 연한 회색 배경 */
+    background-color: #ffffff; /* 짝수 행에 흰색 배경 */
+}
+
+/* 그래프 스타일 */
+.plotly-graph {
+    margin: 20px 0; /* 그래프 상하 여백 */
 }

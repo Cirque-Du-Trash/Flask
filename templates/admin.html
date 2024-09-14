@@ -24,8 +24,8 @@
     <form id="questionForm" action="{{ url_for('manage_questions') }}" method="post">
         <input type="hidden" name="action" id="formAction" value="">
         
-        <label for="new_question">새 질문 추가:</label><br>
-        <input type="text" id="new_question" name="new_question"><br>
+        <label for="new_question"><h3>새 질문 추가</h3></label><br>
+        <input type="text" id="new_question" name="new_question">
         <button type="button" onclick="submitForm('add')">추가</button>
 
         <h3>현재 질문 목록</h3>
@@ -41,8 +41,8 @@
         </ul>
         
         <div class="action-buttons">
-            <button type="button" onclick="submitForm('edit')">수정</button>
-            <button type="button" onclick="submitForm('reorder')">변경사항 저장</button>
+            <button type="button" onclick="submitForm('edit')">질문 수정</button>
+            <button type="button" onclick="submitForm('reorder')">순서 변경</button>
         </div>
     </form>
 
