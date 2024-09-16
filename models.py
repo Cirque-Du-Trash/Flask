@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import json
 
 db = SQLAlchemy()
 
@@ -23,6 +24,10 @@ class TestResponse(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     response = db.Column(db.Text, nullable=False)
     response_date = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    @property
+    def responses(self):
+        return json.loads(self.response)
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)

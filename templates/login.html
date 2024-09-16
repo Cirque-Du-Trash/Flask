@@ -13,7 +13,7 @@
             {{ form.hidden_tag() }}  <!-- CSRF 보호를 위한 숨겨진 태그 -->
             <div class="form-group">
                 <label for="username">아이디</label>
-                {{ form.username(class="form-control", id="username") }}
+                {{ form.username(class="form-control", id="username", autocomplete="off") }}
                 {% for error in form.username.errors %}
                     <div class="alert alert-danger">{{ error }}</div>
                 {% endfor %}

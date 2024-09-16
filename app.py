@@ -6,6 +6,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from forms import SurveyInfoForm, LoginForm, TestForm
 from models import db, User, TestResponse, Question
+from datetime import timedelta
 import pandas as pd
 import plotly.express as px
 import json
@@ -13,6 +14,8 @@ import json
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)  # 10분 후 만료
+app.config['SESSION_PERMANENT'] = False  # 세션을 영구적으로 유지하지 않음
 
 # 데이터베이스 및 마이그레이션 초기화
 migrate = Migrate(app, db)
@@ -21,6 +24,7 @@ db.init_app(app)
 # 로그인 관리 초기화
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'  # 로그인 페이지의 엔드포인트 설정
+login_manager.session_protection = 'strong'
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -29,7 +33,10 @@ def load_user(user_id):
 # 어드민 패널 설정
 class MyModelView(ModelView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin  # 로그인 여부 및 관리자 여부 확인
+        return current_user.is_authenticated and current_user.is_admin
+    
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login', next=request.url))
 
 admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
 admin.add_view(MyModelView(User, db.session))
@@ -120,20 +127,20 @@ def logout():
 def stats():
     total_responses = TestResponse.query.count()
     
+    # 참가자 정보
+    participants = TestResponse.query.all()
+
     # 질문 통계 계산
     questions = Question.query.all()
     question_stats = []
     for question in questions:
-        yes_count = TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "yes"%')).count()
-        no_count = TestResponse.query.filter(TestResponse.response.like(f'%"{question.id}": "no"%')).count()
+        yes_count = sum(1 for response in participants if response.responses.get(f'question{question.id}') == 'yes')
+        no_count = sum(1 for response in participants if response.responses.get(f'question{question.id}') == 'no')
         question_stats.append({
             'question': question.text,
             'yes': yes_count,
             'no': no_count
         })
-
-    # 참가자 정보
-    participants = TestResponse.query.all()
 
     # 데이터프레임 생성
     df = pd.DataFrame(question_stats)
@@ -141,10 +148,6 @@ def stats():
     # Plotly를 이용한 그래프 생성
     fig = px.bar(df, x='question', y=['yes', 'no'], title='질문별 응답 통계', barmode='group')
     graph_html = fig.to_html(full_html=False)
-
-    # JSON 응답 파싱
-    for participant in participants:
-        participant.responses = json.loads(participant.response)  # JSON 문자열 파싱
 
     return render_template('stats.html', total_responses=total_responses, graph_html=graph_html, participants=participants)
 
