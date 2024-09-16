@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>설문자 정보 입력</title>
+    <title>정보 입력</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>설문자 정보 입력</h1>
+        <h1>정보 입력</h1>
         <form method="POST" action="{{ url_for('index') }}">
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.name.label }} 
-                {{ form.name(size=16) }}
+                {{ form.name(class="form-control", autocomplete="off") }} <!-- 클래스 추가 -->
             </div>
             <div class="form-group">
                 {{ form.birth_year.label }} 
-                {{ form.birth_year() }}
+                {{ form.birth_year(class="form-control") }} <!-- 클래스 추가 -->
             </div>
             <div class="form-group">
                 {{ form.gender.label }} 
-                {{ form.gender() }}
+                {{ form.gender(class="form-control") }} <!-- 클래스 추가 -->
             </div>
             <div class="form-group">
                 {{ form.submit(class='btn') }}
@@ -29,9 +29,11 @@
         </form>
         
         <br>
-        <a href="{{ url_for('login') }}">
-            <button type="button" class="btn">로그인</button>
-        </a>
+        <div class="admin-button">
+            <a href="{{ url_for('login') }}">
+                <button type="button" class="btn small">관리자 페이지</button>
+            </a>
+        </div>
     </div>
 </body>
 </html>

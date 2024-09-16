@@ -3,42 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 페이지</title>
+    <title>관리 페이지</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
     <style>
         .question-input { width: 400px; }
         .order-input { width: 50px; }
         .action-buttons { margin-top: 10px; }
+        #questionContainer { margin-top: 20px; }
+        .question-item { margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <h1>관리자 페이지</h1>
+    <h1>관리 페이지</h1>
     <nav>
         <ul>
-            <li><a href="{{ url_for('stats') }}">통계 보기</a></li>
-            <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
+            <li>
+                <div class="admin-button">
+                    <a href="{{ url_for('stats') }}">
+                        <button type="button" class="nav-button">통계 보기</button>
+                    </a>
+                </div>
+            </li>
+            <li>
+                <div class="admin-button">
+                    <a href="{{ url_for('logout') }}">
+                        <button type="button" class="nav-button">로그아웃</button>
+                    </a>
+                </div>
+            </li>            
         </ul>
     </nav>
-
-    <h2>설문 질문 관리</h2>
+    
+    <h2>설문 관리</h2>
     <form id="questionForm" action="{{ url_for('manage_questions') }}" method="post">
         <input type="hidden" name="action" id="formAction" value="">
         
-        <label for="new_question"><h3>새 질문 추가</h3></label><br>
-        <input type="text" id="new_question" name="new_question">
+        <label for="new_question"><h3>새 질문 추가</h3></label>
+        <input type="text" id="new_question" name="new_question" autocomplete="off">
         <button type="button" onclick="submitForm('add')">추가</button>
 
         <h3>현재 질문 목록</h3>
-        <ul id="questionList">
+        <div id="questionContainer">
             {% for question in questions %}
-                <li>
-                    <input type="text" name="question_text[]" class="question-input" value="{{ question.text }}" required>
+                <div class="question-item">
+                    <input type="text" name="question_text[]" autocomplete="off" class="question-input" value="{{ question.text }}" required>
                     <input type="hidden" name="question_id[]" value="{{ question.id }}">
                     <input type="number" name="order[]" class="order-input" value="{{ question.order }}" min="1" max="{{ questions|length }}">
                     <button type="button" onclick="deleteQuestion('{{ question.id }}')">삭제</button>
-                </li>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
         
         <div class="action-buttons">
             <button type="button" onclick="submitForm('edit')">질문 수정</button>

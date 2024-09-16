@@ -21,20 +21,28 @@ nav {
 nav ul {
     list-style: none; /* 불릿 제거 */
     padding: 0;
+    display: flex;
 }
 
 nav ul li {
     display: inline; /* 가로로 나열 */
-    margin-right: 15px; /* 간격 */
 }
 
-nav ul li a {
-    text-decoration: none; /* 밑줄 제거 */
-    color: #2980b9; /* 파란색 글자 */
+/* 공통 버튼 스타일 */
+button, .nav-button {
+    background-color: #000000; /* 파란색 배경 */
+    color: #ffffff; /* 흰색 글자 */
+    border: none; /* 테두리 제거 */
+    border-radius: 4px; /* 모서리 둥글기 */
+    cursor: pointer; /* 커서 모양 변경 */
+    transition: background-color 0.3s; /* 배경색 변화 애니메이션 */
+    font-size: 13px;
+    font-weight: bold;
+    justify-content: left;
 }
 
-nav ul li a:hover {
-    text-decoration: underline; /* 마우스 오버 시 밑줄 */
+button:hover, .nav-button:hover {
+    background-color: #272a2c; /* 마우스 오버 시 어두운 파란색 */
 }
 
 /* 폼 스타일 */
@@ -45,6 +53,15 @@ form {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 그림자 */
 }
 
+#new_question {
+    width: calc(25% - 22px); /* 입력 필드의 너비 */
+    padding: 10px; /* 여백 */
+    border: 1px solid #cccccc; /* 연한 회색 테두리 */
+    border-radius: 4px; /* 모서리 둥글기 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 아주 연한 그림자 */
+    margin-bottom: 10px;
+}
+
 /* 입력 필드 스타일 */
 .question-input, .order-input {
     width: calc(100% - 22px); /* 입력 필드의 너비 */
@@ -52,32 +69,11 @@ form {
     border: 1px solid #cccccc; /* 연한 회색 테두리 */
     border-radius: 4px; /* 모서리 둥글기 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 아주 연한 그림자 */
-    margin-bottom: 10px; /* 입력 필드 사이 간격 */
 }
 
-/* 버튼 스타일 */
-button {
-    padding: 10px 15px; /* 여백 */
-    background-color: #000000; /* 검은색 배경 */
-    color: #ffffff; /* 흰색 글자 */
-    border: none; /* 테두리 제거 */
-    border-radius: 4px; /* 모서리 둥글기 */
-    cursor: pointer; /* 커서 모양 변경 */
-    transition: background-color 0.3s; /* 배경색 변화 애니메이션 */
-}
-
-button:hover {
-    background-color: #333333; /* 마우스 오버 시 어두운 회색 */
-}
-
-/* 리스트 스타일 */
-ul {
-    padding-left: 20px; /* 왼쪽 여백 */
-}
-
-/* 액션 버튼 스타일 */
-.action-buttons {
-    margin-top: 20px; /* 상단 여백 */
+/* 질문 항목 스타일 */
+#questionContainer {
+    margin-top: 20px; /* 질문 목록 상단 여백 */
 }
 
 /* 삭제 버튼 스타일 (추가) */
@@ -87,4 +83,31 @@ button.delete {
 
 button.delete:hover {
     background-color: #c0392b; /* 마우스 오버 시 어두운 빨간색 */
+}
+
+/* 공통 버튼 스타일 */
+button, .nav-button {
+    padding: 10px 15px; /* 여백 */
+    background-color: #000000; /* 파란색 배경 */
+    color: #ffffff; /* 흰색 글자 */
+    border: none; /* 테두리 제거 */
+    border-radius: 4px; /* 모서리 둥글기 */
+    cursor: pointer; /* 커서 모양 변경 */
+    transition: background-color 0.3s; /* 배경색 변화 애니메이션 */
+    font-size: 13px;
+    font-weight: bold;
+    margin: 5px; /* 버튼 간의 간격 설정 */
+}
+
+button:hover, .nav-button:hover {
+    background-color: #272a2c; /* 마우스 오버 시 어두운 파란색 */
+}
+
+/* 액션 버튼 스타일 */
+.action-buttons {
+    margin-top: 20px; /* 상단 여백 */
+    font-size: 13px;
+    font-weight: bold;
+    display: flex; /* 수평 정렬을 위해 flex 사용 */
+    justify-content: left; /* 버튼 간격을 동일하게 유지 */
 }
