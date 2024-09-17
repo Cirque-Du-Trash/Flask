@@ -27,6 +27,7 @@ class TestResponse(db.Model):
     response_date = db.Column(db.DateTime, default=lambda: datetime.now(pytz.timezone('Asia/Seoul')))
     name = db.Column(db.String(100), nullable=False)
     age_group = db.Column(db.String(50), nullable=False)
+    gender = db.Column(db.String(10), nullable=False)
     
     @property
     def responses(self):

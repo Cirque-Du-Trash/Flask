@@ -78,9 +78,11 @@ def index():
         
         session['name'] = form.name.data
         session['age_group'] = age_group
+        session['gender'] = form.gender.data
         
         print("Name:", form.name.data)
         print("Age Group:", age_group)
+        print("Gender:", form.gender.data)
         
         user_id = current_user.id if current_user.is_authenticated else None
         
@@ -88,7 +90,8 @@ def index():
             user_id=user_id,
             response=json.dumps({}),
             name=form.name.data,
-            age_group=age_group
+            age_group=age_group,
+            gender=form.gender.data
         )
         
         print("Attempting to save:", test_response.name, test_response.age_group)
@@ -117,7 +120,8 @@ def survey():
             user_id=user_id,
             response=json.dumps(responses),
             name=session.get('name'),  # 이름 필드 추가
-            age_group=session.get('age_group')  # 연령대 필드 추가
+            age_group=session.get('age_group'),  # 연령대 필드 추가
+            gender=session.get('gender')
         )
 
         db.session.add(test_response)
@@ -164,11 +168,16 @@ def stats():
     participants = TestResponse.query.all()
     
     print("Total Responses:", total_responses)
-    print("Participants:", [(p.name, p.age_group) for p in participants])
+    print("Participants:", [(p.name, p.age_group, p.gender) for p in participants])
     
     # 질문 통계 계산
     questions = Question.query.all()
     question_stats = []
+    gender_stats = {'남': 0 , '여': 0}
+    
+    for participant in participants:
+        gender_stats[participant.gender] += 1
+        
     for question in questions:
         yes_count = sum(1 for response in participants if response.responses.get(f'question{question.id}') == 'yes')
         no_count = sum(1 for response in participants if response.responses.get(f'question{question.id}') == 'no')
