@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import pytz
 import json
 
 db = SQLAlchemy()
@@ -23,7 +24,9 @@ class TestResponse(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     response = db.Column(db.Text, nullable=False)
-    response_date = db.Column(db.DateTime, default=datetime.utcnow)
+    response_date = db.Column(db.DateTime, default=lambda: datetime.now(pytz.timezone('Asia/Seoul')))
+    name = db.Column(db.String(100), nullable=False)
+    age_group = db.Column(db.String(50), nullable=False)
     
     @property
     def responses(self):

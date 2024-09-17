@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, Response
+from flask import Flask, render_template, redirect, url_for, request, Response, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -70,13 +70,40 @@ with app.app_context():
 def index():
     form = SurveyInfoForm()
     if form.validate_on_submit():
+        if not form.name.data:
+            flash('이름을 입력해 주세요.', 'error')
+            return render_template('index.html', form=form)
+        
+        age_group = form.calculate_age_group()
+        
+        session['name'] = form.name.data
+        session['age_group'] = age_group
+        
+        print("Name:", form.name.data)
+        print("Age Group:", age_group)
+        
+        user_id = current_user.id if current_user.is_authenticated else None
+        
+        test_response = TestResponse(
+            user_id=user_id,
+            response=json.dumps({}),
+            name=form.name.data,
+            age_group=age_group
+        )
+        
+        print("Attempting to save:", test_response.name, test_response.age_group)
+        
+        db.session.add(test_response)
+        db.session.commit()
+        
+        print("Saved Response:", test_response)
+        
         return redirect(url_for('survey'))
     return render_template('index.html', form=form)
 
-# 설문 페이지
 @app.route('/survey', methods=['GET', 'POST'])
 def survey():
-    questions = Question.query.order_by(Question.order).all()  # 순서에 따라 질문 정렬
+    questions = Question.query.order_by(Question.order).all()  # 질문 순서 정렬
     if request.method == 'POST':
         responses = {}
         for i, question in enumerate(questions):
@@ -84,11 +111,19 @@ def survey():
             responses[response_key] = request.form.get(response_key)
 
         user_id = current_user.id if current_user.is_authenticated else None
-        test_response = TestResponse(user_id=user_id, response=json.dumps(responses))
+
+        # 여기에서 TestResponse 객체를 생성할 때 name과 age_group을 포함해야 합니다.
+        test_response = TestResponse(
+            user_id=user_id,
+            response=json.dumps(responses),
+            name=session.get('name'),  # 이름 필드 추가
+            age_group=session.get('age_group')  # 연령대 필드 추가
+        )
+
         db.session.add(test_response)
         db.session.commit()
         return redirect(url_for('result'))
-    
+
     return render_template('survey.html', questions=questions)
 
 # 결과 페이지
@@ -126,10 +161,11 @@ def logout():
 @login_required
 def stats():
     total_responses = TestResponse.query.count()
-    
-    # 참가자 정보
     participants = TestResponse.query.all()
-
+    
+    print("Total Responses:", total_responses)
+    print("Participants:", [(p.name, p.age_group) for p in participants])
+    
     # 질문 통계 계산
     questions = Question.query.all()
     question_stats = []
@@ -150,6 +186,7 @@ def stats():
     graph_html = fig.to_html(full_html=False)
 
     return render_template('stats.html', total_responses=total_responses, graph_html=graph_html, participants=participants)
+
 
 # 질문 관리
 @app.route('/edit_questions', methods=['POST'])

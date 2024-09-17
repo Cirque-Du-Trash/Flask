@@ -28,5 +28,21 @@ class SurveyInfoForm(FlaskForm):
     birth_year_choices = [(str(year), str(year)) for year in range(current_year, current_year - 101, -1)]
     birth_year = SelectField('출생년도', choices=birth_year_choices, validators=[InputRequired()])
     gender = SelectField('성별', choices=[('남', '남성'), ('여', '여성')])
-    submit = SubmitField('설문 시작')
     name = StringField('이름', validators=[DataRequired()])
+    submit = SubmitField('설문 시작')
+    
+    def calculate_age_group(self):
+        birth_year = int(self.birth_year.data)
+        age = self.current_year - birth_year
+        if age < 20:
+            return '10대'
+        elif age < 30:
+            return '20대'
+        elif age < 40:
+            return '30대'
+        elif age < 50:
+            return '40대'
+        elif age < 60:
+            return '50대'
+        else:
+            return '60대 이상'

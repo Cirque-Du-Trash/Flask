@@ -21,7 +21,8 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>참가자 ID</th>
+                    <th>이름</th>  <!-- 이름 열 추가 -->
+                    <th>연령대</th>  <!-- 연령대 열 추가 -->
                     <th>응답 날짜</th>
                     <th>선택한 항목</th>
                 </tr>
@@ -29,7 +30,8 @@
             <tbody>
                 {% for participant in participants %}
                 <tr>
-                    <td>{{ participant.id }}</td>
+                    <td>{{ participant.name }}</td>  <!-- 이름 출력 -->
+                    <td>{{ participant.age_group }}</td>  <!-- 연령대 출력 -->
                     <td>{{ participant.response_date }}</td>
                     <td>
                         {% for key, value in participant.responses.items() %}
