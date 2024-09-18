@@ -9,7 +9,7 @@ body {
 
 /* 컨테이너 스타일 */
 .container {
-    max-width: 800px; /* 최대 너비 */
+    width: flex;
     margin: auto; /* 가운데 정렬 */
     padding: 20px; /* 여백 */
     border: 1px solid #000000; /* 검은색 테두리 */
