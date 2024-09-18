@@ -89,11 +89,7 @@ def index():
         session['age_group'] = age_group
         session['gender'] = form.gender.data
         session['step'] = 'survey'
-        
-        print("Name:", form.name.data)
-        print("Age Group:", age_group)
-        print("Gender:", form.gender.data)
-        
+            
         user_id = current_user.id if current_user.is_authenticated else None
         
         return redirect(url_for('survey'))
@@ -174,6 +170,11 @@ def result():
             "이럴 때일수록 주변 사람들과의 소통이 중요하며, 전문적인 도움을 받는 것도 고려해보세요. "
             "자신의 감정을 이해하고 관리하는 방법을 찾는 것이 필요합니다."
         )
+        
+    test_response = TestResponse.query.order_by(TestResponse.id.desc()).first()
+    if test_response:
+        test_response.result_message = result_message
+        db.session.commit()
 
     return render_template('result.html', result=result_message)
 
@@ -209,8 +210,8 @@ def stats():
     total_responses = TestResponse.query.count()
     participants = TestResponse.query.all()
     
-    print("Total Responses:", total_responses)
-    print("Participants:", [(p.name, p.age_group, p.gender) for p in participants])
+    # 결과 메시지를 수집
+    results = [p.result_message for p in participants]
     
     # 질문 통계 계산
     questions = Question.query.all()
@@ -236,8 +237,8 @@ def stats():
     fig = px.bar(df, x='question', y=['yes', 'no'], title='질문별 응답 통계', barmode='group')
     graph_html = fig.to_html(full_html=False)
 
-    return render_template('stats.html', total_responses=total_responses, graph_html=graph_html, participants=participants)
-
+    # results 변수를 템플릿에 전달
+    return render_template('stats.html', total_responses=total_responses, graph_html=graph_html, participants=participants, results=results)
 
 # 질문 관리
 @app.route('/edit_questions', methods=['POST'])
@@ -245,10 +246,6 @@ def stats():
 def edit_questions():
     question_ids = request.form.getlist('question_id[]')  # 여러 개의 질문 ID를 받음
     edit_question_texts = request.form.getlist('edit_question_text[]')  # 여러 개의 질문 텍스트를 받음
-
-    # 디버깅을 위한 프린트
-    print("Received question IDs:", question_ids)
-    print("Received edited question texts:", edit_question_texts)
 
     for question_id, edit_question_text in zip(question_ids, edit_question_texts):
         question = Question.query.get(question_id)

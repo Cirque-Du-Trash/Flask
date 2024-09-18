@@ -28,6 +28,7 @@ class TestResponse(db.Model):
     name = db.Column(db.String(100), nullable=False)
     age_group = db.Column(db.String(50), nullable=False)
     gender = db.Column(db.String(10), nullable=False)
+    result_message = db.Column(db.Text, nullable=True)
     
     @property
     def responses(self):

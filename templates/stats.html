@@ -12,7 +12,6 @@
         <p>총 응답 수: <strong>{{ total_responses }}</strong></p>
 
         <h2>질문별 응답 통계</h2>
-        <!-- Plotly 그래프 출력 -->
         <div>
             {{ graph_html | safe }}
         </div>
@@ -21,24 +20,28 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>이름</th>  <!-- 이름 열 추가 -->
-                    <th>연령대</th>  <!-- 연령대 열 추가 -->
+                    <th>이름</th>
+                    <th>연령대</th>
                     <th>성별</th>
                     <th>응답 날짜</th>
                     <th>선택한 항목</th>
+                    <th>결과</th>
                 </tr>
             </thead>
             <tbody>
                 {% for participant in participants %}
                 <tr>
-                    <td>{{ participant.name }}</td>  <!-- 이름 출력 -->
-                    <td>{{ participant.age_group }}</td>  <!-- 연령대 출력 -->
+                    <td>{{ participant.name }}</td>
+                    <td>{{ participant.age_group }}</td>
                     <td>{{ participant.gender }}</td>
                     <td>{{ participant.response_date }}</td>
                     <td>
                         {% for key, value in participant.responses.items() %}
                             {{ key }}: {{ value }}<br>
                         {% endfor %}
+                    </td>
+                    <td>
+                        {{ results[loop.index0] }}  <!-- 각 참가자의 결과를 인덱스 기반으로 가져옴 -->
                     </td>
                 </tr>
                 {% endfor %}
