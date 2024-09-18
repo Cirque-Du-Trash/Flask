@@ -26,6 +26,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'  # 로그인 페이지의 엔드포인트 설정
 login_manager.session_protection = 'strong'
 
+def is_response_duplicate(name, age_group, gender):
+    return TestResponse.query.filter_by(name=name, age_group=age_group, gender=gender).first() is not None
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -65,6 +68,7 @@ with app.app_context():
     create_initial_questions()  # 초기 질문 생성
     create_admin_user()  # 기본 어드민 계정 생성
 
+
 # 기본 페이지
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -76,6 +80,11 @@ def index():
         
         age_group = form.calculate_age_group()
         
+        # 중복 체크
+        if is_response_duplicate(form.name.data, age_group, form.gender.data):
+            flash('이미 응답이 기록되어 있습니다.', 'error')
+            return render_template('index.html', form=form)
+
         session['name'] = form.name.data
         session['age_group'] = age_group
         session['gender'] = form.gender.data
@@ -86,24 +95,10 @@ def index():
         
         user_id = current_user.id if current_user.is_authenticated else None
         
-        test_response = TestResponse(
-            user_id=user_id,
-            response=json.dumps({}),
-            name=form.name.data,
-            age_group=age_group,
-            gender=form.gender.data
-        )
-        
-        print("Attempting to save:", test_response.name, test_response.age_group)
-        
-        db.session.add(test_response)
-        db.session.commit()
-        
-        print("Saved Response:", test_response)
-        
         return redirect(url_for('survey'))
     return render_template('index.html', form=form)
 
+# 설문 페이지
 @app.route('/survey', methods=['GET', 'POST'])
 def survey():
     questions = Question.query.order_by(Question.order).all()  # 질문 순서 정렬
@@ -114,8 +109,11 @@ def survey():
             responses[response_key] = request.form.get(response_key)
 
         user_id = current_user.id if current_user.is_authenticated else None
+        
+        if is_response_duplicate(session.get('name'), session.get('age_group'), session.get('gender')):
+            flash('이미 응답이 기록되어 있습니다.', 'error')
+            return redirect(url_for('result'))
 
-        # 여기에서 TestResponse 객체를 생성할 때 name과 age_group을 포함해야 합니다.
         test_response = TestResponse(
             user_id=user_id,
             response=json.dumps(responses),
@@ -129,6 +127,7 @@ def survey():
         return redirect(url_for('result'))
 
     return render_template('survey.html', questions=questions)
+
 
 # 결과 페이지
 @app.route('/result')

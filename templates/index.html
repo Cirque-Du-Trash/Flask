@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h1>정보 입력</h1>
-        <form method="POST" action="{{ url_for('index') }}">
+        <form method="POST" action="{{ url_for('index') }}" onsubmit="this.submitButton.disabled = true;"> 
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.name.label }} 
