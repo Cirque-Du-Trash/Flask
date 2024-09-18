@@ -107,6 +107,8 @@ def survey():
         for i, question in enumerate(questions):
             response_key = f'question{i + 1}'
             responses[response_key] = request.form.get(response_key)
+            
+        session['responses'] = responses
 
         user_id = current_user.id if current_user.is_authenticated else None
         
@@ -130,9 +132,40 @@ def survey():
 
 
 # 결과 페이지
-@app.route('/result')
+@app.route('/result', methods=['GET'])
 def result():
-    return render_template('result.html')
+    # 세션에서 응답 데이터 가져오기
+    responses = session.get('responses')
+    
+    if responses is None:
+        return render_template('result.html', result="응답이 없습니다.")
+
+    # 결과 계산 로직
+    score = sum(1 for response in responses.values() if response == 'yes')
+
+    # 결과에 따른 메시지
+    if score >= 4:
+        result_message = (
+            "축하합니다! 당신은 감정적으로 안정된 편입니다. "
+            "주변 사람들과의 관계를 잘 유지하며, 스트레스를 효과적으로 관리할 수 있는 능력이 뛰어납니다. "
+            "이러한 감정적 안정성을 바탕으로, 앞으로도 긍정적인 경험을 쌓아가길 바랍니다."
+        )
+    elif score == 3:
+        result_message = (
+            "당신은 감정적으로 약간 불안정할 수 있습니다. "
+            "일상에서의 스트레스가 때때로 당신의 감정에 영향을 미칠 수 있습니다. "
+            "그러나 스스로를 돌아보며 감정을 관리하려는 노력이 돋보입니다. "
+            "보다 안정된 감정을 위해 자신에게 맞는 방법을 찾아보는 것이 좋겠습니다."
+        )
+    else:
+        result_message = (
+            "현재 당신은 감정적으로 불안정한 편일 수 있습니다. "
+            "일상적인 스트레스나 감정적인 어려움이 당신에게 큰 영향을 미치고 있는 것 같습니다. "
+            "이럴 때일수록 주변 사람들과의 소통이 중요하며, 전문적인 도움을 받는 것도 고려해보세요. "
+            "자신의 감정을 이해하고 관리하는 방법을 찾는 것이 필요합니다."
+        )
+
+    return render_template('result.html', result=result_message)
 
 # 어드민 페이지
 @app.route('/admin')

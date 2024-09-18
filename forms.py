@@ -5,11 +5,11 @@ from datetime import datetime
 
 class TestForm(FlaskForm):
     questions = [
-        ('당신은 새로운 사람을 만나는 것이 즐겁다고 느끼나요?'),
-        ('일상에서 스트레스를 자주 느끼나요?'),
-        ('당신은 목표를 세우고 그것을 달성하는 데 집중하는 편인가요?'),
-        ('혼자 있는 시간을 좋아하나요?'),
-        ('가끔 감정적으로 불안정하다고 느끼나요?')
+        ('새로운 사람과의 만남이 당신에게 즐거움을 주나요?'),
+        ('일상에서 스트레스를 자주 느끼며 이를 잘 관리하고 있나요?'),
+        ('목표를 설정하고 이를 달성하기 위해 계획을 세우는 편인가요?'),
+        ('혼자 있는 시간을 통해 자신을 돌아보는 것을 좋아하나요?'),
+        ('가끔 감정적으로 불안정하다고 느끼며, 이를 극복하려고 노력하나요?')
     ]
     question1 = RadioField(questions[0], choices=[('yes', '예'), ('no', '아니오')], validators=[DataRequired()])
     question2 = RadioField(questions[1], choices=[('yes', '예'), ('no', '아니오')], validators=[DataRequired()])

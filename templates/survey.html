@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>설문조사</title>
+    <title>심리테스트</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='survey.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>설문조사</h1>
+        <h1>심리테스트</h1>
         <form action="{{ url_for('survey') }}" method="post">
             {% for question in questions %}
                 <div class="form-group">
