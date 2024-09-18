@@ -88,6 +88,7 @@ def index():
         session['name'] = form.name.data
         session['age_group'] = age_group
         session['gender'] = form.gender.data
+        session['step'] = 'survey'
         
         print("Name:", form.name.data)
         print("Age Group:", age_group)
@@ -101,6 +102,10 @@ def index():
 # 설문 페이지
 @app.route('/survey', methods=['GET', 'POST'])
 def survey():
+    
+    if session.get('step') != 'survey':
+        return redirect(url_for('index')) # 올바른 접근 형태가 아니면 index로 리다이렉트
+        
     questions = Question.query.order_by(Question.order).all()  # 질문 순서 정렬
     if request.method == 'POST':
         responses = {}
@@ -126,6 +131,8 @@ def survey():
 
         db.session.add(test_response)
         db.session.commit()
+        
+        session['step'] = 'result'
         return redirect(url_for('result'))
 
     return render_template('survey.html', questions=questions)
@@ -134,6 +141,9 @@ def survey():
 # 결과 페이지
 @app.route('/result', methods=['GET'])
 def result():
+    
+    if session.get('step') != 'result':
+        return redirect(url_for('index'))
     # 세션에서 응답 데이터 가져오기
     responses = session.get('responses')
     
