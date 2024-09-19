@@ -68,22 +68,26 @@ with app.app_context():
     create_initial_questions()  # 초기 질문 생성
     create_admin_user()  # 기본 어드민 계정 생성
 
-
-# 기본 페이지
-@app.route('/', methods=['GET', 'POST'])
+# 인덱스 페이지
+@app.route('/')
 def index():
+    return render_template('index.html')
+
+# 참가자 정보입력 페이지
+@app.route('/info', methods=['GET', 'POST'])
+def info():
     form = SurveyInfoForm()
     if form.validate_on_submit():
         if not form.name.data:
             flash('이름을 입력해 주세요.', 'error')
-            return render_template('index.html', form=form)
+            return render_template('info.html', form=form)
         
         age_group = form.calculate_age_group()
         
         # 중복 체크
         if is_response_duplicate(form.name.data, age_group, form.gender.data):
             flash('이미 응답이 기록되어 있습니다.', 'error')
-            return render_template('index.html', form=form)
+            return render_template('info.html', form=form)
 
         session['name'] = form.name.data
         session['age_group'] = age_group
@@ -93,7 +97,7 @@ def index():
         user_id = current_user.id if current_user.is_authenticated else None
         
         return redirect(url_for('survey'))
-    return render_template('index.html', form=form)
+    return render_template('info.html', form=form)
 
 # 설문 페이지
 @app.route('/survey', methods=['GET', 'POST'])
@@ -316,4 +320,4 @@ def manage_questions():
 
 # 애플리케이션 실행
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
