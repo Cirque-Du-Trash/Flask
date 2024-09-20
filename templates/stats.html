@@ -37,7 +37,7 @@
                     <td>{{ participant.name }}</td>
                     <td>{{ participant.age_group }}</td>
                     <td>{{ participant.gender }}</td>
-                    <td>{{ participant.response_date }}</td>
+                    <td>{{ participant.response_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td>
                         {% for key, value in participant.responses.items() %}
                             {{ key }}: {{ value }}<br>

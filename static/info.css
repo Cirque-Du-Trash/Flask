@@ -59,8 +59,9 @@ form {
     border-radius: 4px; /* 모서리 둥글기 */
     cursor: pointer; /* 커서 모양 변경 */
     transition: background-color 0.3s; /* 배경색 전환 효과 */
-    width: 100%; /* 버튼 너비 100% */
+    width: 50%; /* 버튼 너비 100% */
     font-weight: bold;
+    font-family: "Nanum Myeongjo", serif;
 }
 
 .btn:hover {
@@ -71,8 +72,7 @@ form {
 .small {
     width: auto; /* 너비 자동 */
     padding: 5px 10px; /* 여백 조정 */
-    font-size: 14px;
-    font-weight: bold;
+    font-family: "Nanum Myeongjo", serif;
 }
 
 /* 링크 스타일 */
