@@ -39,17 +39,21 @@
                     <td>{{ participant.gender }}</td>
                     <td>{{ participant.response_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td>
-                        {% for key, value in participant.responses.items() %}
-                            {{ key }}: {{ value }}<br>
-                        {% endfor %}
+                        <div class="scrollable-content">
+                            {% for key, value in participant.responses.items() %}
+                                {{ key }}: {{ value }}<br>
+                            {% endfor %}
+                        </div>
                     </td>
                     <td>
-                        {{ results[loop.index0] }}  <!-- 각 참가자의 결과를 인덱스 기반으로 가져옴 -->
+                        <div class="scrollable-content">
+                            {{ results[loop.index0] }}
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>
+        </table>        
         <div>
             <a href="{{ url_for('admin_view') }}" class="btn btn-primary">관리 페이지</a>
         </div>

@@ -8,19 +8,46 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+    <script>
+        let currentQuestion = 0;
+        const totalQuestions = {{ questions|length }};
+
+        function showQuestion() {
+            const questionDivs = document.querySelectorAll('.question');
+            questionDivs.forEach((div, index) => {
+                div.style.display = index === currentQuestion ? 'block' : 'none';
+            });
+        }
+
+        function nextQuestion(response) {
+            const responseKey = `question${currentQuestion + 1}`;
+            document.getElementById(responseKey).value = response;
+            console.log(`Question ${currentQuestion + 1}: ${response}`); // 응답 로그 추가
+            currentQuestion++;
+        
+            if (currentQuestion < totalQuestions) {
+                showQuestion();
+            } else {
+                console.log("Submitting the form"); // 폼 제출 로그 추가
+                document.getElementById('surveyForm').submit();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', showQuestion);
+    </script>
 </head>
 <body>
     <div class="container">
         <h2>심리테스트</h2>
-        <form action="{{ url_for('survey') }}" method="post">
+        <form id="surveyForm" action="{{ url_for('survey') }}" method="post">
             {% for question in questions %}
-                <div class="form-group">
+                <div class="question" style="display: none;">
                     <label>{{ question.text }}</label><br>
-                    <input type="radio" name="question{{ loop.index }}" value="yes" required> 예<br>
-                    <input type="radio" name="question{{ loop.index }}" value="no" required> 아니오<br>
+                    <input type="hidden" id="question{{ loop.index }}" name="question{{ loop.index }}">
+                    <button type="button" onclick="nextQuestion('yes')">예</button>
+                    <button type="button" onclick="nextQuestion('no')">아니오</button>
                 </div>
             {% endfor %}
-            <button type="submit" class="btn">제출</button>
         </form>
     </div>
 </body>

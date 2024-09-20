@@ -19,62 +19,50 @@ body {
 }
 
 /* 제목 스타일 */
-h1 {
+h2 {
     font-size: 2.5em; /* 제목 크기 */
     margin-bottom: 20px; /* 제목 아래 여백 */
     color: #ffffff; /* 흰색 글자 */
 }
 
-/* 폼 그룹 스타일 */
-.form-group {
-    margin-bottom: 15px; /* 아래 여백 */
-    display: flex; /* 플렉스 박스 사용 */
-    align-items: center; /* 세로 중앙 정렬 */
-    color: #ffffff; /* 흰색 글자 */
-}
-
-/* 라디오 버튼 스타일 */
-input[type="radio"] {
-    margin-right: 10px; /* 오른쪽 여백 */
+/* 질문 스타일 */
+.question {
+    display: none; /* 기본적으로 숨김 */
+    margin-bottom: 20px; /* 질문 간 여백 */
 }
 
 /* 버튼 스타일 */
-.btn {
-    padding: 10px; /* 여백 */
+button {
+    padding: 10px 15px; /* 여백 */
     background-color: #d9b89c; /* 연한 배경 */
     color: #ffffff; /* 흰색 글자 */
-    border: 1px solid #000000; /* 검은색 테두리 */
+    border: none; /* 테두리 제거 */
     border-radius: 4px; /* 모서리 둥글기 */
     cursor: pointer; /* 커서 모양 변경 */
     transition: background-color 0.3s; /* 배경색 전환 효과 */
-    width: 100%; /* 버튼 너비 100% */
-    font-size: 16px; /* 버튼 글자 크기 */
+    width: 50%; /* 버튼 너비 50% */
+    font-family: "Nanum Myeongjo", serif; /* 폰트 설정 */
+    font-weight: bold; /* 글자 두께 */
+    margin-top: 20px;
 }
 
-.btn:hover {
+button:hover {
     background-color: #333333; /* 마우스 오버 시 어두운 회색 */
-}
-
-/* 라디오 버튼 레이블 스타일 */
-label {
-    margin-right: 10px; /* 오른쪽 여백 */
-    color: #ffffff; /* 흰색 글자으로 변경 */
-    font-size: 16px; /* 글자 크기 */
 }
 
 /* 미디어 쿼리 */
 @media (max-width: 600px) {
     /* 작은 화면에서의 스타일 */
     .container {
-        max-width: 95%; /* 최대 너비를 90%로 조정 */
+        max-width: 95%; /* 최대 너비를 95%로 조정 */
         padding: 10px; /* 여백 조정 */
     }
 
-    h1 {
+    h2 {
         font-size: 20px; /* 제목 크기 조정 */
     }
 
-    .btn {
+    button {
         padding: 8px; /* 버튼 여백 조정 */
     }
 }
