@@ -66,7 +66,7 @@ label {
 @media (max-width: 600px) {
     /* 작은 화면에서의 스타일 */
     .container {
-        max-width: 90%; /* 최대 너비를 90%로 조정 */
+        max-width: 95%; /* 최대 너비를 90%로 조정 */
         padding: 10px; /* 여백 조정 */
     }
 
