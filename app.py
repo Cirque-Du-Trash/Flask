@@ -8,6 +8,7 @@ from forms import SurveyInfoForm, LoginForm, TestForm
 from supabase import create_client, Client
 from models import db, User, TestResponse, Question
 from datetime import timedelta, datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 import pandas as pd
 import plotly.express as px
 import json
@@ -71,7 +72,7 @@ def create_admin_user():
     if not existing_user.data:
         admin_user = {
             'username': 'admin',
-            'password_hash': 'admin',  
+            'password_hash': generate_password_hash('admin'),  
             'is_admin': True
         }
         supabase.table('users').insert(admin_user).execute()
@@ -239,9 +240,13 @@ def login():
         user_data = supabase.table('users').select('*').eq('username', form.username.data).execute()
         if user_data.data:
             user_info = user_data.data[0]
-            if user_info['password_hash'] == 'admin':  # 비밀번호 검증 로직 추가 필요
+            if check_password_hash(user_info['password_hash'], form.password.data):
                 login_user(User(id=user_info['id'], username=user_info['username'], is_admin=user_info['is_admin']))
                 return redirect(url_for('admin_view'))
+            else:
+                flash('비밀번호가 올바르지 않습니다.', 'error')
+        else:
+            flash('사용자를 찾을 수 없습니다.', 'error')
     return render_template('login.html', form=form)
 
 # 로그아웃
