@@ -20,7 +20,6 @@ deprecation==2.1.0
 dnspython==2.6.1
 Faker==26.2.0
 # Editable install with no version control (five==0.1.0)
--e /Users/cliche/Desktop/SQL/oz
 Flask==3.0.3
 Flask-Admin==1.6.1
 Flask-Login==0.6.3
