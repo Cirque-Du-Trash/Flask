@@ -271,11 +271,17 @@ def stats():
     # 응답 데이터의 시간 변환
     for participant in participants:
         if 'response_date' in participant:
-            # UTC 시간을 datetime 객체로 변환
-            utc_time = datetime.fromisoformat(participant['response_date'])
-            # UTC 시간을 Asia/Seoul로 변환
-            local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Seoul'))
-            participant['response_date'] = local_time  # 변환된 시간을 저장
+            # response_date의 타입 확인
+            response_date = participant['response_date']
+            if isinstance(response_date, str):
+                # 문자열인 경우 datetime 객체로 변환
+                utc_time = datetime.fromisoformat(response_date)
+                # UTC 시간을 Asia/Seoul로 변환
+                local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Seoul'))
+                participant['response_date'] = local_time  # 변환된 시간을 저장
+            else:
+                print(f"Unexpected type for response_date: {type(response_date)}")  # 타입 확인용
+
 
     # 결과 메시지를 수집
     results = [p['result_message'] for p in participants if 'result_message' in p]
