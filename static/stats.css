@@ -5,6 +5,7 @@ body {
     color: #ffffff; /* 흰색 글자 */
     margin: 0; /* 기본 여백 제거 */
     padding: 50px 20px; /* 페이지 여백 */
+    text-align: center;
 }
 
 /* 컨테이너 스타일 */
@@ -27,6 +28,8 @@ h1, h2 {
 .table {
     table-layout: fixed; /* 테이블 레이아웃을 고정합니다 */
     width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
 .table th, .table td {
@@ -41,12 +44,12 @@ h1, h2 {
 }
 
 /* 각 열의 너비를 조정합니다 */
-.table th:nth-child(1), .table td:nth-child(1) { width: 10%; } /* 이름 */
-.table th:nth-child(2), .table td:nth-child(2) { width: 10%; } /* 연령대 */
-.table th:nth-child(3), .table td:nth-child(3) { width: 10%; } /* 성별 */
+.table th:nth-child(1), .table td:nth-child(1) { width: 8%; } /* 이름 */
+.table th:nth-child(2), .table td:nth-child(2) { width: 7%; } /* 연령대 */
+.table th:nth-child(3), .table td:nth-child(3) { width: 5%; } /* 성별 */
 .table th:nth-child(4), .table td:nth-child(4) { width: 15%; } /* 응답 날짜 */
-.table th:nth-child(5), .table td:nth-child(5) { width: 20%; } /* 선택한 항목 */
-.table th:nth-child(6), .table td:nth-child(6) { width: 15%; } /* 결과 */
+.table th:nth-child(5), .table td:nth-child(5) { width: 15%; } /* 선택한 항목 */
+.table th:nth-child(6), .table td:nth-child(6) { width: 30%; } /* 결과 */
 
 .scrollable-content {
     max-height: 80px; /* 스크롤 영역의 최대 높이를 늘립니다 */
@@ -117,7 +120,7 @@ h1, h2 {
     transition: background-color 0.3s; /* 배경색 전환 효과 */
     font-size: 14px; /* 버튼 글자 크기 */
     font-weight: bold; /* 버튼 글자 두께 */
-    margin-top: 5px; /* 위 여백 */
+    margin-top: 30px; /* 위 여백 */
 }
 
 .btn:hover {

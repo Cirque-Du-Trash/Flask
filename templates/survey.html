@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
     <script>
         let currentQuestion = 0;
-        const totalQuestions = {{ questions|length }};
+        const totalQuestions = '{{ questions|length }}';
 
         function showQuestion() {
             const questionDivs = document.querySelectorAll('.question');
@@ -32,7 +32,7 @@
                 document.getElementById('surveyForm').submit();
             }
         }
-        
+
         document.addEventListener('DOMContentLoaded', showQuestion);
     </script>
 </head>
