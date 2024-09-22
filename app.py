@@ -67,17 +67,21 @@ admin.add_view(MyModelView(Question, supabase))
 
 # 기본 어드민 계정 생성
 def create_admin_user():
-    existing_user = supabase.table('users').select('*').eq('username', 'admin').execute()
-    
-    if not existing_user.data:
-        admin_user = {
-            'username': 'admin',
-            'password_hash': generate_password_hash('admin'),  
-            'is_admin': True
-        }
-        supabase.table('users').insert(admin_user).execute()
-    else:
-        print("Admin user already exists.")
+    try:
+        existing_user = supabase.table('users').select('*').eq('username', 'admin').execute()
+        
+        if not existing_user.data:
+            admin_user = {
+                'username': 'admin',
+                'password_hash': generate_password_hash('admin'),  
+                'is_admin': True
+            }
+            supabase.table('users').insert(admin_user).execute()
+            print("Admin user created successfully.")
+        else:
+            print("Admin user already exists.")
+    except Exception as e:
+        print(f"Error creating admin user: {str(e)}")
 
 # 초기 질문 생성
 def create_initial_questions():
@@ -238,14 +242,19 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user_data = supabase.table('users').select('*').eq('username', form.username.data).execute()
+        print("User data:", user_data.data)  # 디버깅을 위한 출력
         if user_data.data:
             user_info = user_data.data[0]
             if check_password_hash(user_info['password_hash'], form.password.data):
-                login_user(User(id=user_info['id'], username=user_info['username'], is_admin=user_info['is_admin']))
+                user = User(id=user_info['id'], username=user_info['username'], is_admin=user_info['is_admin'])
+                login_user(user)
+                print("Login successful")  # 디버깅을 위한 출력
                 return redirect(url_for('admin_view'))
             else:
+                print("Password incorrect")  # 디버깅을 위한 출력
                 flash('비밀번호가 올바르지 않습니다.', 'error')
         else:
+            print("User not found")  # 디버깅을 위한 출력
             flash('사용자를 찾을 수 없습니다.', 'error')
     return render_template('login.html', form=form)
 
