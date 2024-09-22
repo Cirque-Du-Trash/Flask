@@ -40,7 +40,8 @@
                     <td>{{ participant.response_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td>
                         <div class="scrollable-content">
-                            {% for key, value in participant.responses.items() %}
+                            {% set responses = json.loads(participant.response) %}
+                            {% for key, value in responses.items() %}
                                 {{ key }}: {{ value }}<br>
                             {% endfor %}
                         </div>
