@@ -271,7 +271,8 @@ def stats():
     # 응답 데이터의 시간 변환
     for participant in participants:
         if 'response_date' in participant:
-            utc_time = participant['response_date']
+            # UTC 시간을 datetime 객체로 변환
+            utc_time = datetime.fromisoformat(participant['response_date'])
             # UTC 시간을 Asia/Seoul로 변환
             local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Seoul'))
             participant['response_date'] = local_time  # 변환된 시간을 저장
