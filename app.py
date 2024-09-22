@@ -11,6 +11,7 @@ from datetime import timedelta, datetime
 import pandas as pd
 import plotly.express as px
 import json
+import pytz
 
 app = Flask(__name__)
 
@@ -266,6 +267,14 @@ def stats():
 
     total_responses = len(response.data)  # 데이터 개수
     participants = response.data
+
+    # 응답 데이터의 시간 변환
+    for participant in participants:
+        if 'response_date' in participant:
+            utc_time = participant['response_date']
+            # UTC 시간을 Asia/Seoul로 변환
+            local_time = utc_time.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Seoul'))
+            participant['response_date'] = local_time  # 변환된 시간을 저장
 
     # 결과 메시지를 수집
     results = [p['result_message'] for p in participants if 'result_message' in p]
